@@ -1,0 +1,203 @@
+package net.TheDgtl.Warpz0r;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.PluginManager;
+
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
+
+/**
+ * Warpz0r for Bukkit
+ *
+ * @author Drakia
+ */
+public class Warpz0r extends JavaPlugin {
+	
+    public PermissionHandler Permissions = null;
+    public static Logger log;
+    public static Server server;
+    private HashMap<String, World> worldList = new HashMap<String, World>();
+    private String warpFile;
+    private String homeFile;
+    private World defWorld;
+    
+    public Warpz0r(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
+        super(pluginLoader, instance, desc, folder, plugin, cLoader);
+        
+        // Create data folder if it doesn't exist.
+        if (!getDataFolder().exists()) getDataFolder().mkdirs();
+        warpFile = getDataFolder().getPath() + File.separator + "warps.db";
+        homeFile = getDataFolder().getPath() + File.separator + "homes.db";
+        server = getServer();
+    }
+
+    public void onEnable() {
+    	log = Logger.getLogger("Minecraft");
+    	PluginManager pm = getServer().getPluginManager();
+    	log.info( getDescription().getName() + " version " + getDescription().getVersion() + " is enabled" );
+    	
+    	// Load a list of worlds for warping between worlds.
+		for(World w : getServer().getWorlds()) {
+			worldList.put(w.getName(), w);
+		}
+		defWorld = getServer().getWorlds().get(0);
+    	
+    	// Setup permissions
+    	Plugin perm = pm.getPlugin("Permissions");
+	    if(perm != null) Permissions = ((Permissions)perm).getHandler();
+	    else log.info("[" + getDescription().getName() + "] Permission system not enabled.");
+	    
+		// Check if a previous warps.txt exists, import if it does.
+		File oldFile = new File(warpFile.substring(0, warpFile.length() - 2) + "txt");
+		File newFile = new File(warpFile);
+		if (!newFile.exists() && oldFile.exists()) {
+			Warpz0r.log.info("[Warpz0r] Migrating existing warps.txt file.");
+			Locations.migrateWarps(oldFile.getAbsolutePath(), warpFile, defWorld);
+		}
+		
+		// Check if a previous homes.txt exists, import if it does.
+		oldFile = new File(homeFile.substring(0, homeFile.length() - 2) + "txt");
+		newFile = new File(homeFile);
+		if (!newFile.exists() && oldFile.exists()) {
+			Warpz0r.log.info("[Warpz0r] Migrating existing homes.txt file.");
+			Locations.migrateWarps(oldFile.getAbsolutePath(), homeFile, defWorld);
+		}
+	    
+	    // Load warp and home location data
+	    Locations.loadList(warpFile, Locations.warps, worldList, defWorld);
+	    Locations.loadList(homeFile, Locations.homes, worldList, defWorld);
+    }
+    
+    public void onDisable() {
+    	Locations.clear();
+    	worldList.clear();
+    	log.info( getDescription().getName() + " version " + getDescription().getVersion() + " is disabled" );
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+    	if (!(sender instanceof Player)) return false;
+		Player player = (Player)sender;
+    	String comName = command.getName().toLowerCase();
+        if (comName.equals("warp") && hasPerm(player, "warpz0r.warp", true)) {
+        	if (args.length != 1) {
+        		return false;
+        	}
+        	
+    		Location loc = Locations.getWarp(args[0]);
+    		if (loc != null) {
+    			// Keep the current vertical looking direction
+    			loc.setPitch(player.getLocation().getPitch());
+    			player.teleportTo(loc);
+    			player.sendMessage(ChatColor.GREEN + "Teleported to " + args[0]);
+    			log.info("[Warpz0r] " + player.getName() + " teleported to " + args[0]);
+    		} else {
+    			player.sendMessage(ChatColor.RED + "Warp not found.");
+    			log.info("[Warpz0r] " + player.getName() + " tried to teleport to " + args[0]);
+    		}
+    		return true;
+        } else if (comName.equals("setwarp") && hasPerm(player, "warpz0r.set", player.isOp())) {
+        	if (args.length != 1) {
+        		return false;
+        	}
+        	
+        	Location loc = player.getLocation();
+        	Locations.addWarp(loc, args[0]);
+        	Locations.saveList(warpFile, Locations.warps);
+        	player.sendMessage(ChatColor.GREEN + "Warp Set: " + args[0]);
+        	log.info("[Warpz0r] " + player.getName() + " set warp " + args[0]);
+        	return true;
+        } else if (comName.equals("removewarp") && hasPerm(player, "warpz0r.remove", player.isOp())) {
+        	if (args.length != 1) {
+        		return false;
+        	}
+        	
+        	Location loc = Locations.getWarp(args[0]);
+        	if (loc == null) {
+        		player.sendMessage(ChatColor.RED + "Warp not found.");
+        		log.info("[Warpz0r] " + player.getName() + " tried to remove warp " + args[0]);
+        		return true;
+        	}
+        	Locations.removeWarp(args[0]);
+        	Locations.saveList(warpFile, Locations.warps);
+        	player.sendMessage(ChatColor.GREEN + "Warp removed: " + args[0]);
+        	log.info("[Warpz0r] " + player.getName() + " removed warp " + args[0]);
+        	return true;
+        } else if (comName.equals("listwarps") && hasPerm(player, "warpz0r.list", true)) {
+        	Set<String> warpList = Locations.getWarpList();
+        	if (warpList.size() != 0) {
+        		StringBuilder sb = new StringBuilder();
+        		Iterator<String> warp = warpList.iterator();
+        		sb.append(warp.next());
+        		while (warp.hasNext())
+        			sb.append(", ").append(warp.next());
+        		player.sendMessage(ChatColor.GREEN + "Warps: " + ChatColor.WHITE + sb.toString());
+        	} else {
+        		player.sendMessage(ChatColor.RED + "Warp list is empty");
+        	}
+        	return true;
+        } else if (comName.equals("warpto") && hasPerm(player, "warpz0r.warpto", player.isOp())) {
+        	if (args.length != 2) {
+        		return false;
+        	}
+        	Player target = getServer().getPlayer(args[0]);
+        	if (target == null) {
+        		player.sendMessage(ChatColor.RED + "Target player not found");
+        		return true;
+        	}
+        	Location loc = Locations.getWarp(args[1]);
+        	if (loc == null) {
+        		player.sendMessage(ChatColor.RED + "Warp not found");
+        		return true;
+        	}
+        	target.teleportTo(loc);
+			player.sendMessage(ChatColor.GREEN + "Teleported " + target.getName() + " to " + args[1]);
+			target.sendMessage(ChatColor.GREEN + player.getName() + " teleported you to " + args[1]);
+			log.info("[Warpz0r] " + player.getName() + " teleported " + target.getName() + " to " + args[1]);
+			return true;
+        } else if (comName.equals("sethome") && hasPerm(player, "warpz0r.sethome", true)) {
+        	Location loc = player.getLocation();
+        	Locations.addHome(loc, player.getName());
+        	Locations.saveList(homeFile, Locations.homes);
+        	player.sendMessage(ChatColor.GREEN + "Home Set");
+        	log.info("[Warpz0r] " + player.getName() + " set home");
+        	return true;
+        } else if (comName.equals("home") && hasPerm(player, "warpz0r.home", true)) {
+    		Location loc = Locations.getHome(player.getName());
+    		if (loc != null) {
+    			// Keep the current vertical looking direction
+    			loc.setPitch(player.getLocation().getPitch());
+    			player.teleportTo(loc);
+    			player.sendMessage(ChatColor.GREEN + "Teleported to home");
+    			log.info("[Warpz0r] " + player.getName() + " teleported to home");
+    		} else {
+    			player.sendMessage(ChatColor.RED + "Home not set");
+    		}
+    		return true;
+        }
+        return false;
+	}
+    
+    public Boolean hasPerm(Player player, String perm, Boolean def) {
+    	if (Permissions != null)
+    		return Permissions.has(player, perm);
+    	return def;
+    }
+}
+
