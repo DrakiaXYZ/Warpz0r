@@ -1,0 +1,44 @@
+=============
+ Description
+=============
+Yet another warp and home plugin. 
+I didn't think there were quite enough warp and home plugins out there, so I decided to write my own for my server.
+
+Download: http://www.mediafire.com/?ecrn9ffal2v7trx
+Download (Direct JAR): http://thedgtl.net/bukkit/Warpz0r.jar
+Source: https://github.com/TheDgtl/Warpz0r
+
+=============
+ Features
+=============
+This plugin supports warping/homing between multiple worlds.
+Permissions plugin is used if installed, otherwise goes based on isOp().
+Will import your existing homes and warps if you place homes.txt/warps.txt file into the plugins/Warpz0r/ folder
+
+=============
+  Commands
+=============
+/warp <name> - Warp yourself to specified warp point
+/warpto <player> <name> - Warp target player to specified warp point
+/listwarps - List all available warps
+/setwarp <name> - Create a named warp at your current location
+/removewarp <name> - Removes a named warp 
+/home - Warp to your set home
+/sethome - Sets your home
+
+=============
+ Permissions
+=============
+warpz0r.warp
+warpz0r.set
+warpz0r.remove
+warpz0r.list
+warpz0r.warpto
+warpz0r.home
+warpz0r.sethome
+
+=============
+  Changes
+=============
+[Version 1.00]
+  - Initial Release
