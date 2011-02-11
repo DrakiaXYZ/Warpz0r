@@ -95,7 +95,11 @@ public class Warpz0r extends JavaPlugin {
     	if (!(sender instanceof Player)) return false;
 		Player player = (Player)sender;
     	String comName = command.getName().toLowerCase();
-        if (comName.equals("warp") && hasPerm(player, "warpz0r.warp", true)) {
+        if (comName.equals("warp")) {
+        	if (!hasPerm(player, "warpz0r.warp", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
         	if (args.length != 1) {
         		return false;
         	}
@@ -105,14 +109,18 @@ public class Warpz0r extends JavaPlugin {
     			// Keep the current vertical looking direction
     			loc.setPitch(player.getLocation().getPitch());
     			player.teleportTo(loc);
-    			player.sendMessage(ChatColor.GREEN + "Teleported to " + args[0]);
+    			player.sendMessage(ChatColor.GREEN + "[Warpz0r] Teleported to " + args[0]);
     			log.info("[Warpz0r] " + player.getName() + " teleported to " + args[0]);
     		} else {
-    			player.sendMessage(ChatColor.RED + "Warp not found.");
+    			player.sendMessage(ChatColor.RED + "[Warpz0r] Warp not found.");
     			log.info("[Warpz0r] " + player.getName() + " tried to teleport to " + args[0]);
     		}
     		return true;
-        } else if (comName.equals("setwarp") && hasPerm(player, "warpz0r.set", player.isOp())) {
+        } else if (comName.equals("setwarp")) {
+        	if (!hasPerm(player, "warpz0r.set", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
         	if (args.length != 1) {
         		return false;
         	}
@@ -120,26 +128,34 @@ public class Warpz0r extends JavaPlugin {
         	Location loc = player.getLocation();
         	Locations.addWarp(loc, args[0]);
         	Locations.saveList(warpFile, Locations.warps);
-        	player.sendMessage(ChatColor.GREEN + "Warp Set: " + args[0]);
+        	player.sendMessage(ChatColor.GREEN + "[Warpz0r] Warp Set: " + args[0]);
         	log.info("[Warpz0r] " + player.getName() + " set warp " + args[0]);
         	return true;
-        } else if (comName.equals("removewarp") && hasPerm(player, "warpz0r.remove", player.isOp())) {
+        } else if (comName.equals("removewarp")) {
+        	if (!hasPerm(player, "warpz0r.remove", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
         	if (args.length != 1) {
         		return false;
         	}
         	
         	Location loc = Locations.getWarp(args[0]);
         	if (loc == null) {
-        		player.sendMessage(ChatColor.RED + "Warp not found.");
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Warp not found.");
         		log.info("[Warpz0r] " + player.getName() + " tried to remove warp " + args[0]);
         		return true;
         	}
         	Locations.removeWarp(args[0]);
         	Locations.saveList(warpFile, Locations.warps);
-        	player.sendMessage(ChatColor.GREEN + "Warp removed: " + args[0]);
+        	player.sendMessage(ChatColor.GREEN + "[Warpz0r] Warp removed: " + args[0]);
         	log.info("[Warpz0r] " + player.getName() + " removed warp " + args[0]);
         	return true;
-        } else if (comName.equals("listwarps") && hasPerm(player, "warpz0r.list", true)) {
+        } else if (comName.equals("listwarps")) {
+        	if (!hasPerm(player, "warpz0r.list", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
         	Set<String> warpList = Locations.getWarpList();
         	if (warpList.size() != 0) {
         		StringBuilder sb = new StringBuilder();
@@ -147,47 +163,59 @@ public class Warpz0r extends JavaPlugin {
         		sb.append(warp.next());
         		while (warp.hasNext())
         			sb.append(", ").append(warp.next());
-        		player.sendMessage(ChatColor.GREEN + "Warps: " + ChatColor.WHITE + sb.toString());
+        		player.sendMessage(ChatColor.GREEN + "[Warpz0r] Warps: " + ChatColor.WHITE + sb.toString());
         	} else {
-        		player.sendMessage(ChatColor.RED + "Warp list is empty");
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Warp list is empty");
         	}
         	return true;
-        } else if (comName.equals("warpto") && hasPerm(player, "warpz0r.warpto", player.isOp())) {
+        } else if (comName.equals("warpto")) {
+        	if (!hasPerm(player, "warpz0r.warpto", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
         	if (args.length != 2) {
         		return false;
         	}
         	Player target = getServer().getPlayer(args[0]);
         	if (target == null) {
-        		player.sendMessage(ChatColor.RED + "Target player not found");
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Target player not found");
         		return true;
         	}
         	Location loc = Locations.getWarp(args[1]);
         	if (loc == null) {
-        		player.sendMessage(ChatColor.RED + "Warp not found");
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Warp not found");
         		return true;
         	}
         	target.teleportTo(loc);
-			player.sendMessage(ChatColor.GREEN + "Teleported " + target.getName() + " to " + args[1]);
-			target.sendMessage(ChatColor.GREEN + player.getName() + " teleported you to " + args[1]);
+			player.sendMessage(ChatColor.GREEN + "[Warpz0r] Teleported " + target.getName() + " to " + args[1]);
+			target.sendMessage(ChatColor.GREEN + "[Warpz0r] " + player.getName() + " teleported you to " + args[1]);
 			log.info("[Warpz0r] " + player.getName() + " teleported " + target.getName() + " to " + args[1]);
 			return true;
-        } else if (comName.equals("sethome") && hasPerm(player, "warpz0r.sethome", true)) {
+        } else if (comName.equals("sethome")) {
+        	if (!hasPerm(player, "warpz0r.sethome", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
         	Location loc = player.getLocation();
         	Locations.addHome(loc, player.getName());
         	Locations.saveList(homeFile, Locations.homes);
-        	player.sendMessage(ChatColor.GREEN + "Home Set");
+        	player.sendMessage(ChatColor.GREEN + "[Warpz0r] Home Set");
         	log.info("[Warpz0r] " + player.getName() + " set home");
         	return true;
-        } else if (comName.equals("home") && hasPerm(player, "warpz0r.home", true)) {
+        } else if (comName.equals("home")) {
+        	if (!hasPerm(player, "warpz0r.home", player.isOp())) {
+        		player.sendMessage(ChatColor.RED + "[Warpz0r] Permission Denied");
+        		return true;
+        	}
     		Location loc = Locations.getHome(player.getName());
     		if (loc != null) {
     			// Keep the current vertical looking direction
     			loc.setPitch(player.getLocation().getPitch());
     			player.teleportTo(loc);
-    			player.sendMessage(ChatColor.GREEN + "Teleported to home");
+    			player.sendMessage(ChatColor.GREEN + "[Warpz0r] Teleported to home");
     			log.info("[Warpz0r] " + player.getName() + " teleported to home");
     		} else {
-    			player.sendMessage(ChatColor.RED + "Home not set");
+    			player.sendMessage(ChatColor.RED + "[Warpz0r] Home not set");
     		}
     		return true;
         }

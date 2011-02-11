@@ -4,7 +4,6 @@
 Yet another warp and home plugin. 
 I didn't think there were quite enough warp and home plugins out there, so I decided to write my own for my server.
 
-Download: http://www.mediafire.com/?ecrn9ffal2v7trx
 Download (Direct JAR): http://thedgtl.net/bukkit/Warpz0r.jar
 Source: https://github.com/TheDgtl/Warpz0r
 
@@ -40,5 +39,8 @@ warpz0r.sethome
 =============
   Changes
 =============
+[Version 1.01]
+  - Changed permission handling to send "Permission Denied" messages
+  - Prepended "[Warpz0r]" to all messages sent to player
 [Version 1.00]
   - Initial Release
