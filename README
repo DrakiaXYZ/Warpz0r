@@ -42,6 +42,8 @@ warpz0r.worldhome
 =============
   Changes
 =============
+[Version 1.03]
+  - Apparently world.equals doesn't work? Changed to compare world names.
 [Version 1.02]
   - Remove long constructor
   - Fixed Permission handling, works with /pr now

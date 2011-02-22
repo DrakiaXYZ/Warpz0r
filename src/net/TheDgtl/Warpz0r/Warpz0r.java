@@ -109,7 +109,7 @@ public class Warpz0r extends JavaPlugin {
         	
     		Location loc = Locations.getWarp(args[0]);
     		if (loc != null) {
-    			if (loc.getWorld() != player.getWorld() && !hasPerm(player, "warpz0r.worldwarp", player.isOp())) {
+    			if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldwarp", player.isOp())) {
     				player.sendMessage(ChatColor.RED + "[Warpz0r] Not allowed to warp between worlds");
     				return true;
     			}
@@ -216,7 +216,7 @@ public class Warpz0r extends JavaPlugin {
         	}
     		Location loc = Locations.getHome(player.getName());
     		if (loc != null) {
-    			if (loc.getWorld() != player.getWorld() && !hasPerm(player, "warpz0r.worldhome", true)) {
+    			if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldhome", true)) {
     				player.sendMessage(ChatColor.RED + "[Warpz0r] Not allowed to teleport home between worlds");
     				return true;
     			}
