@@ -1,7 +1,7 @@
 name: Warpz0r
 main: net.TheDgtl.Warpz0r.Warpz0r
 author: Drakia
-version: 1.01
+version: 1.02
 commands:
   warp:
     description: Warp yourself to specified warp point
