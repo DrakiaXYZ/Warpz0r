@@ -27,6 +27,15 @@ Ability to disable inter-world warp
 /sethome - Sets your home
 
 =============
+Configuration
+=============
+useiconomy - Set to "true" to use iConomy
+sethomecost - The cost to use /sethome
+warpcost - The cost to use /warp
+homecost - The cost to use /home
+
+
+=============
  Permissions
 =============
 warpz0r.warp
@@ -42,6 +51,9 @@ warpz0r.worldhome
 =============
   Changes
 =============
+[Version 1.04]
+  - Added iConomy support
+  - Added a function to handle messaging the player, now only the "[Warpz0r]" text is colored
 [Version 1.03]
   - Apparently world.equals doesn't work? Changed to compare world names.
 [Version 1.02]
