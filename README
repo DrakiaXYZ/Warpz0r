@@ -14,6 +14,7 @@ This plugin supports warping/homing between multiple worlds.
 Permissions plugin is used if installed, otherwise goes based on isOp().
 Will import your existing homes and warps if you place homes.txt/warps.txt file into the plugins/Warpz0r/ folder
 Ability to disable inter-world warp
+iConomy support for /home, /warp, and /sethome
 
 =============
   Commands
