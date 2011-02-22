@@ -13,6 +13,7 @@ Source: https://github.com/TheDgtl/Warpz0r
 This plugin supports warping/homing between multiple worlds.
 Permissions plugin is used if installed, otherwise goes based on isOp().
 Will import your existing homes and warps if you place homes.txt/warps.txt file into the plugins/Warpz0r/ folder
+Ability to disable inter-world warp
 
 =============
   Commands
@@ -35,10 +36,16 @@ warpz0r.list
 warpz0r.warpto
 warpz0r.home
 warpz0r.sethome
+warpz0r.worldwarp
+warpz0r.worldhome
 
 =============
   Changes
 =============
+[Version 1.02]
+  - Remove long constructor
+  - Fixed Permission handling, works with /pr now
+  - Ability to disable inter-world warping
 [Version 1.01]
   - Changed permission handling to send "Permission Denied" messages
   - Prepended "[Warpz0r]" to all messages sent to player

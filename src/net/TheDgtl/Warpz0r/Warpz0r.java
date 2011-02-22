@@ -19,8 +19,8 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
-import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
+import com.nijikokun.bukkit.iConomy.iConomy;
 
 /**
  * Warpz0r for Bukkit
@@ -29,28 +29,30 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  */
 public class Warpz0r extends JavaPlugin {
 	
-    public PermissionHandler Permissions = null;
+    public Permissions Permissions = null;
     public static Logger log;
     public static Server server;
     private HashMap<String, World> worldList = new HashMap<String, World>();
     private String warpFile;
     private String homeFile;
     private World defWorld;
-    
+
+    // Constructor for old version
+    /*
     public Warpz0r(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
-        
+    }*/
+    
+    public void onEnable() {
+    	log = Logger.getLogger("Minecraft");
+    	PluginManager pm = getServer().getPluginManager();
+    	log.info( getDescription().getName() + " version " + getDescription().getVersion() + " is enabled" );
+    	
         // Create data folder if it doesn't exist.
         if (!getDataFolder().exists()) getDataFolder().mkdirs();
         warpFile = getDataFolder().getPath() + File.separator + "warps.db";
         homeFile = getDataFolder().getPath() + File.separator + "homes.db";
         server = getServer();
-    }
-
-    public void onEnable() {
-    	log = Logger.getLogger("Minecraft");
-    	PluginManager pm = getServer().getPluginManager();
-    	log.info( getDescription().getName() + " version " + getDescription().getVersion() + " is enabled" );
     	
     	// Load a list of worlds for warping between worlds.
 		for(World w : getServer().getWorlds()) {
@@ -60,7 +62,7 @@ public class Warpz0r extends JavaPlugin {
     	
     	// Setup permissions
     	Plugin perm = pm.getPlugin("Permissions");
-	    if(perm != null) Permissions = ((Permissions)perm).getHandler();
+	    if(perm != null) Permissions = (Permissions)perm;
 	    else log.info("[" + getDescription().getName() + "] Permission system not enabled.");
 	    
 		// Check if a previous warps.txt exists, import if it does.
@@ -93,6 +95,7 @@ public class Warpz0r extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
     	if (!(sender instanceof Player)) return false;
+    	
 		Player player = (Player)sender;
     	String comName = command.getName().toLowerCase();
         if (comName.equals("warp")) {
@@ -106,6 +109,10 @@ public class Warpz0r extends JavaPlugin {
         	
     		Location loc = Locations.getWarp(args[0]);
     		if (loc != null) {
+    			if (loc.getWorld() != player.getWorld() && !hasPerm(player, "warpz0r.worldwarp", player.isOp())) {
+    				player.sendMessage(ChatColor.RED + "[Warpz0r] Not allowed to warp between worlds");
+    				return true;
+    			}
     			// Keep the current vertical looking direction
     			loc.setPitch(player.getLocation().getPitch());
     			player.teleportTo(loc);
@@ -209,6 +216,10 @@ public class Warpz0r extends JavaPlugin {
         	}
     		Location loc = Locations.getHome(player.getName());
     		if (loc != null) {
+    			if (loc.getWorld() != player.getWorld() && !hasPerm(player, "warpz0r.worldhome", true)) {
+    				player.sendMessage(ChatColor.RED + "[Warpz0r] Not allowed to teleport home between worlds");
+    				return true;
+    			}
     			// Keep the current vertical looking direction
     			loc.setPitch(player.getLocation().getPitch());
     			player.teleportTo(loc);
@@ -224,7 +235,7 @@ public class Warpz0r extends JavaPlugin {
     
     public Boolean hasPerm(Player player, String perm, Boolean def) {
     	if (Permissions != null)
-    		return Permissions.has(player, perm);
+    		return Permissions.Security.has(player, perm);
     	return def;
     }
 }

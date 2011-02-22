@@ -2,6 +2,7 @@ package net.TheDgtl.Warpz0r;
 
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ public class Locations {
 				
 				List.put(elements[0], new Warp(elements[5], l));
 			}
+		} catch (FileNotFoundException e) {
 		} catch (Exception e) {
 			Warpz0r.log.info("[Warpz0r] Could not load locations from " + locFile);
 		} finally {
