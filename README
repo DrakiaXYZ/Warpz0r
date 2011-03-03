@@ -52,6 +52,9 @@ warpz0r.worldhome
 =============
   Changes
 =============
+[Version 1.05]
+  - Updated permission handling
+  - Warp names are no longer case sensitive
 [Version 1.04]
   - Added iConomy support
   - Added a function to handle messaging the player, now only the "[Warpz0r]" text is colored
