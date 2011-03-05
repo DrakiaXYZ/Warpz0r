@@ -5,10 +5,10 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.Location;
@@ -141,11 +141,11 @@ public class Locations {
         return warp.loc;
     }
     
-    public static Set<String> getWarpList() {
-        return Locations.warps.keySet();
+    public static Collection<Warp> getWarpList() {
+        return Locations.warps.values();
     }
     
-    static private class Warp {
+    static public class Warp {
     	public String fullName;
         public String world;
         public Location loc;

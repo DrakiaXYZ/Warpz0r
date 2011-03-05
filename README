@@ -14,7 +14,7 @@ This plugin supports warping/homing between multiple worlds.
 Permissions plugin is used if installed, otherwise goes based on isOp().
 Will import your existing homes and warps if you place homes.txt/warps.txt file into the plugins/Warpz0r/ folder
 Ability to disable inter-world warp
-iConomy support for /home, /warp, and /sethome
+iConomy 4.x support for /home, /warp, and /sethome
 
 =============
   Commands
@@ -35,7 +35,6 @@ sethomecost - The cost to use /sethome
 warpcost - The cost to use /warp
 homecost - The cost to use /home
 
-
 =============
  Permissions
 =============
@@ -52,6 +51,10 @@ warpz0r.worldhome
 =============
   Changes
 =============
+[Version 1.06]
+  - Small permissions handling update
+  - Updated to iConomy 4.x
+  - Warplist now shows proper case
 [Version 1.05]
   - Updated permission handling
   - Warp names are no longer case sensitive

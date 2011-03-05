@@ -1,10 +1,12 @@
 package net.TheDgtl.Warpz0r;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Logger;
+
+import net.TheDgtl.Warpz0r.Locations.Warp;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,8 +21,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.config.Configuration;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
-import com.nijikokun.bukkit.iConomy.Misc;
-import com.nijikokun.bukkit.iConomy.iConomy;
+import com.nijiko.coelho.iConomy.iConomy;
+import com.nijiko.coelho.iConomy.system.Account;
 
 /**
  * Warpz0r for Bukkit
@@ -31,6 +33,7 @@ public class Warpz0r extends JavaPlugin {
     
 	private Permissions permissions = null;
 	private double permVersion = 0;
+	iConomy iconomy = null;
     public static Logger log;
     public static Server server;
     private Configuration config;
@@ -65,7 +68,7 @@ public class Warpz0r extends JavaPlugin {
         
         if (setupPermissions()) {
         	if (permissions != null)
-        		log.info("[Tombstone] Loaded Permissions v" + permVersion + " for permissions");
+        		log.info("[Tombstone] Using Permissions " + permVersion + " (" + Permissions.version + ") for permissions");
         } else {
         	log.info("[Tombstone] No permissions plugin found, using default permission settings");
         }
@@ -76,6 +79,11 @@ public class Warpz0r extends JavaPlugin {
             if (icon == null) {
                 useiConomy = false;
             } else {
+            	// Force enable
+            	if (!icon.isEnabled()) {
+            		pm.enablePlugin(icon);
+            	}
+            	iconomy = (iConomy)icon;
                 Warpz0r.log.info("[Warpz0r] Using iConomy. Warp Cost: " + warpCost + " Home Cost: " + homeCost);
             }
         }
@@ -139,8 +147,8 @@ public class Warpz0r extends JavaPlugin {
             if (args.length != 1) {
                 return false;
             }
-            if (useiConomy && iConomy.db.get_balance(player.getName()) < warpCost) {
-                sendMessage(player, "Insufficient funds to warp. Cost: " + Misc.formatCurrency(warpCost, iConomy.currency), true);
+            if (useiConomy && iConomy.getBank().getAccount(player.getName()).getBalance() < warpCost) {
+                sendMessage(player, "Insufficient funds to warp. Cost: " + iConomy.getBank().format(warpCost), true);
                 return true;
             }
             Location loc = Locations.getWarp(args[0]);
@@ -151,9 +159,10 @@ public class Warpz0r extends JavaPlugin {
                 }
                 // Subtract iConomy
                 if (useiConomy && warpCost > 0) {
-                    int bal = iConomy.db.get_balance(player.getName());
-                    iConomy.db.set_balance(player.getName(), bal - warpCost);
-                    sendMessage(player, "Deducted " + Misc.formatCurrency(warpCost, iConomy.currency) + " for warping", false);
+                	Account acc = iConomy.getBank().getAccount(player.getName());
+                	acc.subtract(warpCost);
+                	acc.save();
+                    sendMessage(player, "Deducted " + iConomy.getBank().format(warpCost) + " for warping", false);
                 }
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
@@ -208,13 +217,13 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            Set<String> warpList = Locations.getWarpList();
+            Collection<Warp> warpList = Locations.getWarpList();
             if (warpList.size() != 0) {
                 StringBuilder sb = new StringBuilder();
-                Iterator<String> warp = warpList.iterator();
-                sb.append(warp.next());
+                Iterator<Warp> warp = warpList.iterator();
+                sb.append(warp.next().fullName);
                 while (warp.hasNext())
-                    sb.append(", ").append(warp.next());
+                    sb.append(", ").append(warp.next().fullName);
                 sendMessage(player, "Warps: " + ChatColor.WHITE + sb.toString(), false);
             } else {
                 sendMessage(player, "Warp list is empty", true);
@@ -251,13 +260,14 @@ public class Warpz0r extends JavaPlugin {
                 return true;
             }
             if (useiConomy && setHomeCost > 0) {
-                if (iConomy.db.get_balance(player.getName()) < setHomeCost) {
-                    sendMessage(player, "Insufficient funds to set home. Cost: " + Misc.formatCurrency(setHomeCost, iConomy.currency), true);
+                if (iConomy.getBank().getAccount(player.getName()).getBalance() < setHomeCost) {
+                    sendMessage(player, "Insufficient funds to set home. Cost: " + iConomy.getBank().format(setHomeCost), true);
                     return true;
                 } else {
-                    int bal = iConomy.db.get_balance(player.getName());
-                    iConomy.db.set_balance(player.getName(), bal - setHomeCost);
-                    sendMessage(player, "Deducted " + Misc.formatCurrency(setHomeCost, iConomy.currency) + " for setting home", false);
+                	Account acc = iConomy.getBank().getAccount(player.getName());
+                	acc.subtract(setHomeCost);
+                	acc.save();
+                    sendMessage(player, "Deducted " + iConomy.getBank().format(setHomeCost) + " for setting home", false);
                 }
             }
             Location loc = player.getLocation();
@@ -272,8 +282,8 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            if (useiConomy && iConomy.db.get_balance(player.getName()) < homeCost) {
-                sendMessage(player, "Insufficient funds to warp home. Cost: " + Misc.formatCurrency(homeCost, iConomy.currency), true);
+            if (useiConomy && iConomy.getBank().getAccount(player.getName()).getBalance() < homeCost) {
+                sendMessage(player, "Insufficient funds to warp home. Cost: " + iConomy.getBank().format(homeCost), true);
                 return true;
             }
             Location loc = Locations.getHome(player.getName());
@@ -284,9 +294,10 @@ public class Warpz0r extends JavaPlugin {
                 }
                 // Subtract iConomy
                 if (useiConomy && homeCost > 0) {
-                    int bal = iConomy.db.get_balance(player.getName());
-                    iConomy.db.set_balance(player.getName(), bal - homeCost);
-                    sendMessage(player, "Deducted " + Misc.formatCurrency(homeCost, iConomy.currency) + " for teleporting home", false);
+                	Account acc = iConomy.getBank().getAccount(player.getName());
+                	acc.subtract(homeCost);
+                	acc.save();
+                    sendMessage(player, "Deducted " + iConomy.getBank().format(homeCost) + " for teleporting home", false);
                 }
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
@@ -322,10 +333,11 @@ public class Warpz0r extends JavaPlugin {
 			}
 			permissions = (Permissions)perm;
 			try {
-				permVersion = Double.parseDouble(Permissions.version);
+				String[] permParts = Permissions.version.split("\\.");
+				permVersion = Double.parseDouble(permParts[0] + "." + permParts[1]);
 			} catch (Exception e) {
 				log.info("Could not determine Permissions version: " + Permissions.version);
-				return false;
+				return true;
 			}
 			return true;
 		}
