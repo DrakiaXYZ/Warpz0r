@@ -46,6 +46,8 @@ public class Warpz0r extends JavaPlugin {
     private int warpCost;
     private int homeCost;
     private int setHomeCost;
+    private int setWarpCost;
+    private int removeWarpCost;
     
     public void onEnable() {
         log = Logger.getLogger("Minecraft");
@@ -68,9 +70,9 @@ public class Warpz0r extends JavaPlugin {
         
         if (setupPermissions()) {
         	if (permissions != null)
-        		log.info("[Tombstone] Using Permissions " + permVersion + " (" + Permissions.version + ") for permissions");
+        		log.info("[Warpz0r] Using Permissions " + permVersion + " (" + Permissions.version + ") for permissions");
         } else {
-        	log.info("[Tombstone] No permissions plugin found, using default permission settings");
+        	log.info("[Warpz0r] No permissions plugin found, using default permission settings");
         }
         
         // Setup iConomy
@@ -121,6 +123,8 @@ public class Warpz0r extends JavaPlugin {
         warpCost = config.getInt("warpcost", 5);
         homeCost = config.getInt("homecost", 5);
         setHomeCost = config.getInt("sethomecost", 0);
+        setWarpCost = config.getInt("setwarpcost", 0);
+        removeWarpCost = config.getInt("removewarpcost", 0);
         saveConfig();
     }
     
@@ -129,6 +133,8 @@ public class Warpz0r extends JavaPlugin {
         config.setProperty("warpcost", warpCost);
         config.setProperty("homecost", homeCost);
         config.setProperty("sethomecost", setHomeCost);
+        config.setProperty("setwarpcost", setWarpCost);
+        config.setProperty("removewarpcost", removeWarpCost);
         config.save();
     }
     
@@ -147,7 +153,7 @@ public class Warpz0r extends JavaPlugin {
             if (args.length != 1) {
                 return false;
             }
-            if (useiConomy && iConomy.getBank().getAccount(player.getName()).getBalance() < warpCost) {
+            if (useiConomy && warpCost > 0 && iConomy.getBank().getAccount(player.getName()).getBalance() < warpCost) {
                 sendMessage(player, "Insufficient funds to warp. Cost: " + iConomy.getBank().format(warpCost), true);
                 return true;
             }
@@ -183,7 +189,17 @@ public class Warpz0r extends JavaPlugin {
             if (args.length != 1) {
                 return false;
             }
-            
+            if (useiConomy && setWarpCost > 0 && iConomy.getBank().getAccount(player.getName()).getBalance() < setWarpCost) {
+                sendMessage(player, "Insufficient funds to set warp. Cost: " + iConomy.getBank().format(setWarpCost), true);
+                return true;
+            }
+            // Subtract iConomy
+            if (useiConomy && setWarpCost > 0) {
+            	Account acc = iConomy.getBank().getAccount(player.getName());
+            	acc.subtract(setWarpCost);
+            	acc.save();
+                sendMessage(player, "Deducted " + iConomy.getBank().format(setWarpCost) + " for setting warp", false);
+            }
             Location loc = player.getLocation();
             Locations.addWarp(loc, args[0]);
             Locations.saveList(warpFile, Locations.warps);
@@ -199,12 +215,22 @@ public class Warpz0r extends JavaPlugin {
             if (args.length != 1) {
                 return false;
             }
-            
+            if (useiConomy && removeWarpCost > 0 && iConomy.getBank().getAccount(player.getName()).getBalance() < removeWarpCost) {
+                sendMessage(player, "Insufficient funds to remove warp. Cost: " + iConomy.getBank().format(removeWarpCost), true);
+                return true;
+            }
             Location loc = Locations.getWarp(args[0]);
             if (loc == null) {
                 sendMessage(player, "Warp not found.", true);
                 log.info("[Warpz0r] " + player.getName() + " tried to remove warp " + args[0]);
                 return true;
+            }
+            // Subtract iConomy
+            if (useiConomy && removeWarpCost > 0) {
+            	Account acc = iConomy.getBank().getAccount(player.getName());
+            	acc.subtract(removeWarpCost);
+            	acc.save();
+                sendMessage(player, "Deducted " + iConomy.getBank().format(removeWarpCost) + " for removing warp", false);
             }
             Locations.removeWarp(args[0]);
             Locations.saveList(warpFile, Locations.warps);
@@ -282,7 +308,7 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            if (useiConomy && iConomy.getBank().getAccount(player.getName()).getBalance() < homeCost) {
+            if (useiConomy && homeCost > 0 && iConomy.getBank().getAccount(player.getName()).getBalance() < homeCost) {
                 sendMessage(player, "Insufficient funds to warp home. Cost: " + iConomy.getBank().format(homeCost), true);
                 return true;
             }

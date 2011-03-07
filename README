@@ -51,6 +51,9 @@ warpz0r.worldhome
 =============
   Changes
 =============
+[Version 1.07]
+  - Damned copy-pasta code had Tombstone's name in it, oops.
+  - Added iConomy cost for set/removeWarp
 [Version 1.06]
   - Small permissions handling update
   - Updated to iConomy 4.x
