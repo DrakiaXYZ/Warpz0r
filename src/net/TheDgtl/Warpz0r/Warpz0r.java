@@ -1,12 +1,8 @@
 package net.TheDgtl.Warpz0r;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.logging.Logger;
-
-import net.TheDgtl.Warpz0r.Locations.Warp;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -109,6 +105,8 @@ public class Warpz0r extends JavaPlugin {
         // Load warp and home location data
         Locations.loadList(warpFile, Locations.warps, worldList, defWorld);
         Locations.loadList(homeFile, Locations.homes, worldList, defWorld);
+        // Update list of warps
+        Locations.updateList();
     }
     
     public void onDisable() {
@@ -243,13 +241,13 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            Collection<Warp> warpList = Locations.getWarpList();
-            if (warpList.size() != 0) {
+            
+            String[] warpList = Locations.getWarpList();
+            if (warpList.length != 0) {
                 StringBuilder sb = new StringBuilder();
-                Iterator<Warp> warp = warpList.iterator();
-                sb.append(warp.next().fullName);
-                while (warp.hasNext())
-                    sb.append(", ").append(warp.next().fullName);
+                sb.append(warpList[0]);
+                for (int i = 1; i < warpList.length; i++)
+                    sb.append(", ").append(warpList[i]);
                 sendMessage(player, "Warps: " + ChatColor.WHITE + sb.toString(), false);
             } else {
                 sendMessage(player, "Warp list is empty", true);

@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.bukkit.World;
 public class Locations {
     public static HashMap<String, Warp> warps = new HashMap<String, Warp>();
     public static HashMap<String, Warp> homes = new HashMap<String, Warp>();
+    public static String warpList[];
 
     public static void saveList(String locFile, HashMap<String, Warp> List) {
         try {
@@ -107,6 +109,7 @@ public class Locations {
     
     public static void clear() {
         Locations.warps.clear();
+        Locations.warpList = new String[0];
     }
     
     public static void addHome(Location loc, String name) {
@@ -125,10 +128,22 @@ public class Locations {
     
     public static void addWarp(Location loc, String name) {
         Locations.warps.put(name.toLowerCase(), new Warp(name, loc));
+        Locations.updateList();
     }
     
     public static void removeWarp(String name) {
         Locations.warps.remove(name.toLowerCase());
+        Locations.updateList();
+    }
+    
+    public static void updateList() {
+    	Collection<Warp> list = Locations.warps.values();
+    	Locations.warpList = new String[list.size()];
+    	int i = 0;
+    	for (Warp w : list) { 
+    		Locations.warpList[i++] = w.fullName;
+    	}
+    	Arrays.sort(Locations.warpList);
     }
     
     public static Location getWarp(String name) {
@@ -141,11 +156,11 @@ public class Locations {
         return warp.loc;
     }
     
-    public static Collection<Warp> getWarpList() {
-        return Locations.warps.values();
+    public static String[] getWarpList() {
+        return Locations.warpList;
     }
     
-    static public class Warp {
+    public static class Warp {
     	public String fullName;
         public String world;
         public Location loc;
