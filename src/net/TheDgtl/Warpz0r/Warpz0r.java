@@ -1,5 +1,24 @@
 package net.TheDgtl.Warpz0r;
 
+
+/**
+  * Warpz0r - A warp plugin for Bukkit
+  * Copyright (C) 2011 Steven "Drakia" Scott <Drakia@Gmail.com>
+  * 
+  * This program is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  * 
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -20,11 +39,6 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 import com.nijiko.coelho.iConomy.iConomy;
 import com.nijiko.coelho.iConomy.system.Account;
 
-/**
- * Warpz0r for Bukkit
- *
- * @author Drakia
- */
 public class Warpz0r extends JavaPlugin {
     
 	private Permissions permissions = null;
