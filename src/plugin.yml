@@ -1,7 +1,7 @@
 name: Warpz0r
 main: net.TheDgtl.Warpz0r.Warpz0r
 author: Drakia
-version: 1.08
+version: 1.09
 commands:
   warp:
     description: Warp yourself to specified warp point
@@ -24,3 +24,9 @@ commands:
   sethome:
     description: Sets your home
     usage: /<command> - Set your home
+  wz:
+    description: Set your compass direction
+    usage: |
+      /<command> compass - Set your compass to point to your home
+      /<command> compass <warp> - Set your compass to point to <warp> 
+      /<command> compass reset - Set your compass to point to spawn

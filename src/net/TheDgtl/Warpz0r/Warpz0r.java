@@ -346,6 +346,56 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Home not set", false);
             }
             return true;
+        // Command: /wz
+        } else if (comName.equals("wz")) {
+        	if (args.length == 0) return false;
+        	if (!args[0].equalsIgnoreCase("compass")) return false;
+        	// Command: /wz (Set compass to home)
+        	if (args.length == 1) {
+        		if (!hasPerm(player, "warpz0r.compasshome", true)) {
+        			sendMessage(player, "Permissions Denied", true);
+        			return true;
+        		}
+        		Location loc = Locations.getHome(player.getName());
+        		if (loc != null) {
+        			if (!loc.getWorld().getName().equalsIgnoreCase(player.getWorld().getName())) {
+        				sendMessage(player, "Home is in a different world", true);
+        				return true;
+        			}
+        			player.setCompassTarget(loc);
+        			sendMessage(player, "Compass now pointed to home", false);
+        		} else {
+        			sendMessage(player, "Home not set", true);
+        		}
+        	// Command: /wz <warp> (Set compass to warp)
+        	} else if (args.length == 2) {
+        		if (!hasPerm(player, "warpz0r.compasswarp", player.isOp())) {
+        			sendMessage(player, "Permissions Denied", true);
+        			return true;
+        		}
+        		// Reset compass to spawn
+        		log.info("[Warpz0r] args[0]=" + args[1]);
+        		if (args[1].equalsIgnoreCase("reset")) {
+        			Location loc = player.getWorld().getSpawnLocation();
+        			player.setCompassTarget(loc);
+        			sendMessage(player, "Compass now pointed to spawn", false);
+        		} else {
+	        		Location loc = Locations.getWarp(args[1]);
+	        		if (loc != null) {
+	        			if (!loc.getWorld().getName().equalsIgnoreCase(player.getWorld().getName())) {
+	        				sendMessage(player, "Warp is in a different world", true);
+	        				return true;
+	        			}
+	        			player.setCompassTarget(loc);
+	        			sendMessage(player, "Compass now pointed to " + args[1], false);
+	        		} else {
+	        			sendMessage(player, "Warp not found", true);
+	        		}
+        		}
+        	} else {
+        		return false;
+        	}
+        	return true;
         }
 
         return false;
