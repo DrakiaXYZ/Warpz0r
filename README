@@ -26,6 +26,9 @@ iConomy 4.x support for /home, /warp, and /sethome
 /removewarp <name> - Removes a named warp 
 /home - Warp to your set home
 /sethome - Sets your home
+/wz compass - Set your compass to point to your home
+/wz compass <warp> - Set your compass to point to <warp>
+/wz compass reset - Set your compass to point to spawn
 
 =============
 Configuration
@@ -38,19 +41,24 @@ homecost - The cost to use /home
 =============
  Permissions
 =============
-warpz0r.warp
-warpz0r.set
-warpz0r.remove
-warpz0r.list
-warpz0r.warpto
-warpz0r.home
-warpz0r.sethome
-warpz0r.worldwarp
-warpz0r.worldhome
+warpz0r.warp - Allow /warp
+warpz0r.set - Allow /setwarp
+warpz0r.remove - Allow /removewarp
+warpz0r.list - Allow /listwarps
+warpz0r.warpto - Allow /warpto
+warpz0r.home - Allow /home
+warpz0r.sethome - Allow /sethome
+warpz0r.worldwarp - Allow warping between worlds
+warpz0r.worldhome - Allow using /home between worlds
+warpz0r.compasshome - Allow using /wz compass
+warpz0r.compasswarp - Allow using /wz compass <warp>
+warpz0r.compassreset - Allow using /wz compass reset
 
 =============
   Changes
 =============
+[Verison 1.09]
+  - Added "/wz compass" "/wz compass reset" and "/wz compass <warp>"
 [Version 1.08]
   - /listwarps is now alphabetical
 [Version 1.07]

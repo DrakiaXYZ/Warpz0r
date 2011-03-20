@@ -369,17 +369,20 @@ public class Warpz0r extends JavaPlugin {
         		}
         	// Command: /wz <warp> (Set compass to warp)
         	} else if (args.length == 2) {
-        		if (!hasPerm(player, "warpz0r.compasswarp", player.isOp())) {
-        			sendMessage(player, "Permissions Denied", true);
-        			return true;
-        		}
         		// Reset compass to spawn
-        		log.info("[Warpz0r] args[0]=" + args[1]);
         		if (args[1].equalsIgnoreCase("reset")) {
+            		if (!hasPerm(player, "warpz0r.compassreset", true)) {
+            			sendMessage(player, "Permissions Denied", true);
+            			return true;
+            		}
         			Location loc = player.getWorld().getSpawnLocation();
         			player.setCompassTarget(loc);
         			sendMessage(player, "Compass now pointed to spawn", false);
         		} else {
+            		if (!hasPerm(player, "warpz0r.compasswarp", player.isOp())) {
+            			sendMessage(player, "Permissions Denied", true);
+            			return true;
+            		}
 	        		Location loc = Locations.getWarp(args[1]);
 	        		if (loc != null) {
 	        			if (!loc.getWorld().getName().equalsIgnoreCase(player.getWorld().getName())) {
