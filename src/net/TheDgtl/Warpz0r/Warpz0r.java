@@ -64,7 +64,7 @@ public class Warpz0r extends JavaPlugin {
     
     public void onEnable() {
         log = Logger.getLogger("Minecraft");
-        PluginManager pm = getServer().getPluginManager();
+        pm = getServer().getPluginManager();
         config = getConfiguration();
         log.info( getDescription().getName() + " version " + getDescription().getVersion() + " is enabled" );
         
