@@ -57,7 +57,11 @@ warpz0r.compassreset - Allow using /wz compass reset
 =============
   Changes
 =============
-[Verison 1.09]
+[Version 1.1.0]
+  - Changed version numbering
+  - Changed method used to hook plugins
+  - Updated iConomy support.
+[Version 1.09]
   - Added "/wz compass" "/wz compass reset" and "/wz compass <warp>"
 [Version 1.08]
   - /listwarps is now alphabetical
