@@ -57,6 +57,8 @@ warpz0r.compassreset - Allow using /wz compass reset
 =============
   Changes
 =============
+[Version 1.1.1]
+  - Updated to latest RB
 [Version 1.1.0]
   - Changed version numbering
   - Changed method used to hook plugins

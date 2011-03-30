@@ -31,7 +31,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
-import org.bukkit.event.server.PluginEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -184,7 +185,7 @@ public class Warpz0r extends JavaPlugin {
                 }
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
-                player.teleportTo(loc);
+                player.teleport(loc);
                 sendMessage(player, "Teleported to " + args[0], false);
                 log.info("[Warpz0r] " + player.getName() + " teleported to " + args[0]);
             } else {
@@ -278,7 +279,7 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Warp not found", true);
                 return true;
             }
-            target.teleportTo(loc);
+            target.teleport(loc);
             sendMessage(player, "Teleported " + target.getName() + " to " + args[1], false);
             sendMessage(target, player.getName() + " teleported you to " + args[1], false);
             log.info("[Warpz0r] " + player.getName() + " teleported " + target.getName() + " to " + args[1]);
@@ -326,7 +327,7 @@ public class Warpz0r extends JavaPlugin {
                 }
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
-                player.teleportTo(loc);
+                player.teleport(loc);
                 sendMessage(player, "Teleported to home", false);
                 log.info("[Warpz0r] " + player.getName() + " teleported to home");
             } else {
@@ -409,7 +410,7 @@ public class Warpz0r extends JavaPlugin {
 	
 	private class sListener extends ServerListener {
 		@Override
-		public void onPluginEnabled(PluginEvent event) {
+		public void onPluginEnable(PluginEnableEvent event) {
 			if (iConomyHandler.iconomy == null) {
 				if (event.getPlugin().getDescription().getName().equalsIgnoreCase("iConomy")) {
 					iConomyHandler.iconomy = (iConomy)checkPlugin(event.getPlugin());
@@ -423,7 +424,7 @@ public class Warpz0r extends JavaPlugin {
 		}
 		
 		@Override
-		public void onPluginDisabled(PluginEvent event) {
+		public void onPluginDisable(PluginDisableEvent event) {
 			if (event.getPlugin() == iConomyHandler.iconomy) {
 				log.info("[Warpz0r] Stargate plugin lost.");
 				iConomyHandler.iconomy = null;
