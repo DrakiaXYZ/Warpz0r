@@ -56,6 +56,8 @@ public class Locations {
                 builder.append(l.getYaw());
                 builder.append(':');
                 builder.append(entry.getValue().world);
+                builder.append(':');
+                builder.append(entry.getValue().cost);
                 bw.append(builder.toString());
                 bw.newLine();
             }
@@ -73,7 +75,7 @@ public class Locations {
             while (scanner.hasNextLine()) {
                 
                 String[] elements = scanner.nextLine().split(":");
-                if (elements.length != 6) {
+                if (elements.length < 6) {
                     Warpz0r.log.info("[Warpz0r] Invalid warp.");
                     continue;
                 }
@@ -84,8 +86,11 @@ public class Locations {
                                              Double.parseDouble(elements[2]), 
                                              Double.parseDouble(elements[3]));
                 l.setYaw(Float.parseFloat(elements[4]));
+                int cost = -1;
+                if (elements.length > 6)
+                	cost = Integer.parseInt(elements[6]);
                 
-                List.put(elements[0].toLowerCase(), new Warp(elements[0], elements[5], l));
+                List.put(elements[0].toLowerCase(), new Warp(elements[0], elements[5], l, cost));
             }
         } catch (FileNotFoundException e) {
         } catch (Exception e) {
@@ -130,7 +135,7 @@ public class Locations {
     }
     
     public static void addHome(Location loc, String name) {
-        Locations.homes.put(name.toLowerCase(), new Warp(name, loc));
+        Locations.homes.put(name.toLowerCase(), new Warp(name, loc, -1));
     }
     
     public static Location getHome(String name) {
@@ -143,8 +148,8 @@ public class Locations {
         return warp.loc;
     }
     
-    public static void addWarp(Location loc, String name) {
-        Locations.warps.put(name.toLowerCase(), new Warp(name, loc));
+    public static void addWarp(Location loc, String name, int cost) {
+        Locations.warps.put(name.toLowerCase(), new Warp(name, loc, cost));
         Locations.updateList();
     }
     
@@ -173,6 +178,12 @@ public class Locations {
         return warp.loc;
     }
     
+    public static int getWarpCost(String name) {
+    	Warp warp = Locations.warps.get(name.toLowerCase());
+    	if (warp == null) return -1;
+    	return warp.cost;
+    }
+    
     public static String[] getWarpList() {
         return Locations.warpList;
     }
@@ -181,18 +192,25 @@ public class Locations {
     	public String fullName;
         public String world;
         public Location loc;
+        public int cost;
         
-        Warp(String fullName, String world, Location loc) {
+        Warp (String fullName, String world, Location loc) {
+        	this(fullName, world, loc, -1);
+        }
+        
+        Warp(String fullName, String world, Location loc, int cost) {
         	this.fullName = fullName;
             this.loc = loc;
             this.world = world;
+            this.cost = cost;
         }
         
-        Warp (String fullName, Location loc) {
+        Warp (String fullName, Location loc, int cost) {
         	this.fullName = fullName;
             this.loc = loc;
             this.world = "";
             if (this.loc.getWorld() != null) this.world = this.loc.getWorld().getName();
+            this.cost = cost;
         }
     }
 }

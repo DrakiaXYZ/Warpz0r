@@ -21,6 +21,7 @@ public class iConomyHandler {
 	}
 	
 	public static boolean chargePlayer(String player, double amount) {
+		if (amount == 0) return true;
 		if (useiConomy && iconomy != null) {
 			Account acc = iConomy.getBank().getAccount(player);
 			if (acc == null) {

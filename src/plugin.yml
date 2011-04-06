@@ -1,7 +1,7 @@
 name: Warpz0r
 main: net.TheDgtl.Warpz0r.Warpz0r
 author: Drakia
-version: 1.1.1
+version: 1.2.0
 commands:
   warp:
     description: Warp yourself to specified warp point
@@ -14,7 +14,9 @@ commands:
     usage: /<command> - List all available warps
   setwarp:
     description: Create a named warp at your current location
-    usage: /<command> <name> - Create a named warp at your current location
+    usage: |
+      /<command> <name> - Create a named warp at your current location
+      /<command> <name> <cost> - Create a names warp at your location with given cost
   removewarp:
     description: Removes a named warp 
     usage: /<command> <name> - Remove a named warp

@@ -176,12 +176,16 @@ public class Warpz0r extends JavaPlugin {
                     return true;
                 }
                 // iConomy check/charge
-                if (!iConomyHandler.chargePlayer(player.getName(), warpCost)) {
-                	sendMessage(player, "Insufficient funds to warp. Cost: " + iConomy.getBank().format(warpCost), true);
-                	return true;
-                }
-                if (iConomyHandler.useiConomy()) {
-                    sendMessage(player, "Deducted " + iConomy.getBank().format(warpCost) + " for warping", false);
+                if (!hasPerm(player, "warpz0r.free.warp", player.isOp())) {
+	                int cost = Locations.getWarpCost(args[0]);
+	                if (cost < 0) cost = warpCost;
+	                if (!iConomyHandler.chargePlayer(player.getName(), cost)) {
+	                	sendMessage(player, "Insufficient funds to warp. Cost: " + iConomy.getBank().format(cost), true);
+	                	return true;
+	                }
+	                if (cost > 0 && iConomyHandler.useiConomy()) {
+	                    sendMessage(player, "Deducted " + iConomy.getBank().format(cost) + " for warping", false);
+	                }
                 }
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
@@ -199,18 +203,25 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            if (args.length != 1) {
+            if (args.length > 2) {
                 return false;
             }
-            if (!iConomyHandler.chargePlayer(player.getName(), setWarpCost)) {
-                sendMessage(player, "Insufficient funds to set warp. Cost: " + iConomy.getBank().format(setWarpCost), true);
-                return true;
-            }
-            if (iConomyHandler.useiConomy()) {
-                sendMessage(player, "Deducted " + iConomy.getBank().format(setWarpCost) + " for setting warp", false);
+            
+            int cost = -1;
+            if (args.length == 2 && hasPerm(player, "warpz0r.set.cost", player.isOp()))
+            	cost = Integer.valueOf(args[1]);
+            
+            if (!hasPerm(player, "warpz0r.free.setwarp", player.isOp())) {
+	            if (!iConomyHandler.chargePlayer(player.getName(), setWarpCost)) {
+	                sendMessage(player, "Insufficient funds to set warp. Cost: " + iConomy.getBank().format(setWarpCost), true);
+	                return true;
+	            }
+	            if (setWarpCost > 0 && iConomyHandler.useiConomy()) {
+	                sendMessage(player, "Deducted " + iConomy.getBank().format(setWarpCost) + " for setting warp", false);
+	            }
             }
             Location loc = player.getLocation();
-            Locations.addWarp(loc, args[0]);
+            Locations.addWarp(loc, args[0], cost);
             Locations.saveList(warpFile, Locations.warps);
             sendMessage(player, "Warp Set: " + args[0], false);
             log.info("[Warpz0r] " + player.getName() + " set warp " + args[0]);
@@ -230,12 +241,14 @@ public class Warpz0r extends JavaPlugin {
                 log.info("[Warpz0r] " + player.getName() + " tried to remove warp " + args[0]);
                 return true;
             }
-            if (!iConomyHandler.chargePlayer(player.getName(), removeWarpCost)) {
-            	sendMessage(player, "Insufficient funds to remove warp. Cost: " + iConomy.getBank().format(removeWarpCost), true);
-            	return true;
-            }
-            if (iConomyHandler.useiConomy()) {
-                sendMessage(player, "Deducted " + iConomy.getBank().format(removeWarpCost) + " for removing warp", false);
+            if (!hasPerm(player, "warpz0r.free.removewarp", player.isOp())) {
+	            if (!iConomyHandler.chargePlayer(player.getName(), removeWarpCost)) {
+	            	sendMessage(player, "Insufficient funds to remove warp. Cost: " + iConomy.getBank().format(removeWarpCost), true);
+	            	return true;
+	            }
+	            if (removeWarpCost > 0 && iConomyHandler.useiConomy()) {
+	                sendMessage(player, "Deducted " + iConomy.getBank().format(removeWarpCost) + " for removing warp", false);
+	            }
             }
             Locations.removeWarp(args[0]);
             Locations.saveList(warpFile, Locations.warps);
@@ -290,14 +303,14 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            if (setHomeCost > 0) {
-                if (!iConomyHandler.chargePlayer(player.getName(), setHomeCost)) {
-                    sendMessage(player, "Insufficient funds to set home. Cost: " + iConomy.getBank().format(setHomeCost), true);
-                    return true;
-                }
-                if (iConomyHandler.useiConomy()) {
-                    sendMessage(player, "Deducted " + iConomy.getBank().format(setHomeCost) + " for setting home", false);
-                }
+            if (!hasPerm(player, "warpz0r.free.sethome", player.isOp())) {
+	            if (!iConomyHandler.chargePlayer(player.getName(), setHomeCost)) {
+	                sendMessage(player, "Insufficient funds to set home. Cost: " + iConomy.getBank().format(setHomeCost), true);
+	                return true;
+	            }
+	            if (setHomeCost > 0 && iConomyHandler.useiConomy()) {
+	                sendMessage(player, "Deducted " + iConomy.getBank().format(setHomeCost) + " for setting home", false);
+	            }
             }
             Location loc = player.getLocation();
             Locations.addHome(loc, player.getName());
@@ -317,13 +330,14 @@ public class Warpz0r extends JavaPlugin {
                     sendMessage(player, "Not allowed to teleport home between worlds", true);
                     return true;
                 }
-                // Subtract iConomy
-                if (!iConomyHandler.chargePlayer(player.getName(), homeCost)) {
-                	sendMessage(player, "Insufficient funds to warp home. Cost: " + iConomy.getBank().format(homeCost), true);
-                	return true;
-                }
-                if (iConomyHandler.useiConomy()) {
-                    sendMessage(player, "Deducted " + iConomy.getBank().format(homeCost) + " for teleporting home", false);
+                if (!hasPerm(player, "warpz0r.free.home", player.isOp())) {
+	                if (!iConomyHandler.chargePlayer(player.getName(), homeCost)) {
+	                	sendMessage(player, "Insufficient funds to warp home. Cost: " + iConomy.getBank().format(homeCost), true);
+	                	return true;
+	                }
+	                if (homeCost > 0 && iConomyHandler.useiConomy()) {
+	                    sendMessage(player, "Deducted " + iConomy.getBank().format(homeCost) + " for teleporting home", false);
+	                }
                 }
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
