@@ -64,6 +64,8 @@ warpz0r.free.sethome - Allow use of /sethome without iConomy charge
 =============
   Changes
 =============
+[Version 1.2.1]
+  - Forgot to check to make sure the player supplied a warp name
 [Version 1.2.0]
   - Added Free permissions
   - Added per-warp costs
