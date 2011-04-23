@@ -21,6 +21,7 @@ package net.TheDgtl.Warpz0r;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -282,7 +283,7 @@ public class Warpz0r extends JavaPlugin {
             if (args.length != 2) {
                 return false;
             }
-            Player target = getServer().getPlayer(args[0]);
+            Player target = getPlayer(args[0]);
             if (target == null) {
                 sendMessage(player, "Target player not found", true);
                 return true;
@@ -401,9 +402,39 @@ public class Warpz0r extends JavaPlugin {
         		return false;
         	}
         	return true;
+        // Command: /clearhome
+        } else if (comName.equalsIgnoreCase("clearhome")) {
+            if (!hasPerm(player, "warpz0r.admin.clearhome", player.isOp())) {
+                sendMessage(player, "Permission Denied", true);
+                return true;
+            }
+            if (args.length != 1) {
+            	return false;
+            }
+            Player target = getPlayer(args[0]);
+            if (target == null) {
+            	sendMessage(player, "Player " + args[0] + " not found", true);
+            	return true;
+            }
+            Location loc = target.getWorld().getSpawnLocation();
+            Locations.addHome(loc, target.getName());
+            Locations.saveList(homeFile, Locations.homes);
+            sendMessage(player, target.getName() + "'s Home reset to spawn", false);
+            sendMessage(target, "Home reset to spawn by " + player.getName(), false);
+            log.info("[Warpz0r] " + player.getName() + " reset " + target.getName() + "'s home");
+            return true;
         }
 
         return false;
+    }
+    
+    private Player getPlayer(String name) {
+    	List<Player> players = server.matchPlayer(name);
+        if (players.size() < 1) {
+        	return null;
+        }
+        Player target = players.get(0);
+        return target;
     }
     
     private static void sendMessage(Player p, String message, boolean error) {

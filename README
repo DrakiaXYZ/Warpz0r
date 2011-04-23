@@ -60,10 +60,14 @@ warpz0r.free.setwarp - Allow use of /setwarp without iConomy charge
 warpz0r.free.removewarp - Allow use of /removewarp without iConomy charge
 warpz0r.free.home - Allow use of /home without iConomy charge
 warpz0r.free.sethome - Allow use of /sethome without iConomy charge
+warpz0r.admin.clearhome - Allow use of /clearhome
 
 =============
   Changes
 =============
+[Version 1.2.2]
+  - Added /clearhome [Player]
+  - Made /warpto and /clearhome allow partial names
 [Version 1.2.1]
   - Forgot to check to make sure the player supplied a warp name
 [Version 1.2.0]
