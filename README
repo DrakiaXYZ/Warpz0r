@@ -38,6 +38,7 @@ useiconomy - Set to "true" to use iConomy
 sethomecost - The cost to use /sethome
 warpcost - The cost to use /warp
 homecost - The cost to use /home
+noPrefix - Set to "true" to disable "[Warpz0r]" before player messages
 
 =============
  Permissions
@@ -65,6 +66,8 @@ warpz0r.admin.clearhome - Allow use of /clearhome
 =============
   Changes
 =============
+[Version 1.2.3]
+  - Added noPrefix config option
 [Version 1.2.2]
   - Added /clearhome [Player]
   - Made /warpto and /clearhome allow partial names

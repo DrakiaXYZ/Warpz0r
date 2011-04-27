@@ -61,6 +61,7 @@ public class Warpz0r extends JavaPlugin {
     private int setHomeCost;
     private int setWarpCost;
     private int removeWarpCost;
+    private static boolean noPrefix = false;
     
     private final sListener serverListener = new sListener();
     
@@ -126,6 +127,7 @@ public class Warpz0r extends JavaPlugin {
         setHomeCost = config.getInt("sethomecost", 0);
         setWarpCost = config.getInt("setwarpcost", 0);
         removeWarpCost = config.getInt("removewarpcost", 0);
+        Warpz0r.noPrefix = config.getBoolean("noPrefix", false);
         saveConfig();
     }
     
@@ -136,6 +138,7 @@ public class Warpz0r extends JavaPlugin {
         config.setProperty("sethomecost", setHomeCost);
         config.setProperty("setwarpcost", setWarpCost);
         config.setProperty("removewarpcost", removeWarpCost);
+        config.setProperty("noPrefix", Warpz0r.noPrefix);
         config.save();
     }
     
@@ -438,8 +441,12 @@ public class Warpz0r extends JavaPlugin {
     }
     
     private static void sendMessage(Player p, String message, boolean error) {
-        ChatColor color = (error) ? ChatColor.RED : ChatColor.GREEN;
-        p.sendMessage(color + "[Warpz0r] " + ChatColor.WHITE + message);
+        if (Warpz0r.noPrefix) {
+        	p.sendMessage(message);
+        } else {
+        	ChatColor color = (error) ? ChatColor.RED : ChatColor.GREEN;
+        	p.sendMessage(color + "[Warpz0r] " + ChatColor.WHITE + message);
+        }
     }
     
 	/*
