@@ -1,37 +1,54 @@
 package net.TheDgtl.Warpz0r;
 
-import com.nijiko.coelho.iConomy.iConomy;
-import com.nijiko.coelho.iConomy.system.Account;
+import com.iConomy.*;
+import com.iConomy.system.Account;
+import com.iConomy.system.Holdings;
 
 public class iConomyHandler {
+	public static String pName = "Stargate";
 	public static boolean useiConomy = false;
 	public static iConomy iconomy = null;
+	
+	public static int useCost = 0;
+	public static int createCost = 0;
+	public static int destroyCost = 0;
 	public static String inFundMsg = "Insufficient Funds.";
+	public static boolean toOwner = false;
 	
 	public static double getBalance(String player) {
 		if (useiConomy && iconomy != null) {
-			Account acc = iConomy.getBank().getAccount(player);
+			Account acc = iConomy.getAccount(player);
 			if (acc == null) {
-				Warpz0r.log.info("[Warpz0r::ich::getBalance] Error fetching iConomy account for " + player);
+				Warpz0r.log.info("[" + pName + "::ich::getBalance] Error fetching iConomy account for " + player);
 				return 0;
 			}
-			return acc.getBalance();
+			return acc.getHoldings().balance();
 		}
 		return 0;
 	}
 	
-	public static boolean chargePlayer(String player, double amount) {
-		if (amount == 0) return true;
+	public static boolean chargePlayer(String player, String target, double amount) {
 		if (useiConomy && iconomy != null) {
-			Account acc = iConomy.getBank().getAccount(player);
+			// No point going from a player to themself
+			if (player.equals(target)) return true;
+			
+			Account acc = iConomy.getAccount(player);
 			if (acc == null) {
-				Warpz0r.log.info("[Warpz0r::ich::chargePlayer] Error fetching iConomy account for " + player);
+				Warpz0r.log.info("[" + pName + "::ich::chargePlayer] Error fetching iConomy account for " + player);
 				return false;
 			}
-			double balance = acc.getBalance();
+			Holdings hold = acc.getHoldings();
 			
-			if (balance < amount) return false;
-			acc.setBalance(balance - amount);
+			if (!hold.hasEnough(amount)) return false;
+			hold.subtract(amount);
+			
+			if (target != null) {
+				Account tAcc = iConomy.getAccount(target);
+				if (tAcc != null) {
+					Holdings tHold = tAcc.getHoldings();
+					tHold.add(amount);
+				}
+			}
 			return true;
 		}
 		return true;
@@ -39,5 +56,9 @@ public class iConomyHandler {
 	
 	public static boolean useiConomy() {
 		return (useiConomy && iconomy != null);
+	}
+	
+	public static String format(int amt) {
+		return iConomy.format(amt);
 	}
 }

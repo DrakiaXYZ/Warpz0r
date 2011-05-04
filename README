@@ -66,6 +66,8 @@ warpz0r.admin.clearhome - Allow use of /clearhome
 =============
   Changes
 =============
+[Version 1.2.4]
+  - Updated for iConomy 5.x
 [Version 1.2.3]
   - Added noPrefix config option
 [Version 1.2.2]
