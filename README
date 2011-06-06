@@ -14,7 +14,7 @@ This plugin supports warping/homing between multiple worlds.
 Permissions plugin is used if installed, otherwise goes based on isOp().
 Will import your existing homes and warps if you place homes.txt/warps.txt file into the plugins/Warpz0r/ folder
 Ability to disable inter-world warp
-iConomy 4.x support for /home, /warp, and /sethome
+iConomy 5.x support
 
 =============
   Commands
@@ -26,7 +26,10 @@ iConomy 4.x support for /home, /warp, and /sethome
 /setwarp <name> <cost> - Create a named warp at your current location with the specified cost to use it.
 /removewarp <name> - Removes a named warp 
 /home - Warp to your set home
+/home <player> - Warp to a specified players home
 /sethome - Sets your home
+/home <player> - Set a specified players home
+/clearhome <player> - Clear a players home
 /wz compass - Set your compass to point to your home
 /wz compass <warp> - Set your compass to point to <warp>
 /wz compass reset - Set your compass to point to spawn
@@ -39,6 +42,7 @@ sethomecost - The cost to use /sethome
 warpcost - The cost to use /warp
 homecost - The cost to use /home
 noPrefix - Set to "true" to disable "[Warpz0r]" before player messages
+bedhome - Set to true to allow players with warpz0r.bedhome permissions to set home on entering a bed
 
 =============
  Permissions
@@ -51,6 +55,7 @@ warpz0r.list - Allow /listwarps
 warpz0r.warpto - Allow /warpto
 warpz0r.home - Allow /home
 warpz0r.sethome - Allow /sethome
+warpz0r.bedhome - Allow the player to set their home via entering a bed
 warpz0r.worldwarp - Allow warping between worlds
 warpz0r.worldhome - Allow using /home between worlds
 warpz0r.compasshome - Allow using /wz compass
@@ -61,11 +66,25 @@ warpz0r.free.setwarp - Allow use of /setwarp without iConomy charge
 warpz0r.free.removewarp - Allow use of /removewarp without iConomy charge
 warpz0r.free.home - Allow use of /home without iConomy charge
 warpz0r.free.sethome - Allow use of /sethome without iConomy charge
+warpz0r.free.bedhome - Allow setting home during bed usage without iConomy charge
 warpz0r.admin.clearhome - Allow use of /clearhome
+warpz0r.admin.home - Allow use of /home <player>
+warpz0r.admin.sethome - Allow use of /sethome <player> 
 
 =============
   Changes
 =============
+[Version 1.3.0]
+  - Added /home <player>
+  - Added /sethome <player>
+  - Added ability to set home on entering a bed
+  - New config options:
+    - bedhome
+  - New Permissions:
+    - warpz0r.bedhome
+    - warpz0r.free.bedhome
+    - warpz0r.admin.home
+    - warpz0r.admin.sethome
 [Version 1.2.4]
   - Updated for iConomy 5.x
 [Version 1.2.3]

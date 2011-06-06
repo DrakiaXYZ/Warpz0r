@@ -138,6 +138,10 @@ public class Locations {
         Locations.homes.put(name.toLowerCase(), new Warp(name, loc, -1));
     }
     
+    public static boolean removeHome(String name) {
+    	return (Locations.homes.remove(name.toLowerCase()) != null);
+    }
+    
     public static Location getHome(String name) {
         Warp warp = Locations.homes.get(name.toLowerCase());
         if (warp == null) return null;

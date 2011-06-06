@@ -32,6 +32,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
@@ -62,8 +64,10 @@ public class Warpz0r extends JavaPlugin {
     private int setWarpCost;
     private int removeWarpCost;
     private static boolean noPrefix = false;
+    private boolean bedHome = false;
     
     private final sListener serverListener = new sListener();
+    private final pListener playerListener = new pListener();
     
     public void onEnable() {
         log = Logger.getLogger("Minecraft");
@@ -111,6 +115,7 @@ public class Warpz0r extends JavaPlugin {
         
         pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Priority.Monitor, this);
+		pm.registerEvent(Event.Type.PLAYER_BED_ENTER, playerListener, Priority.Monitor, this);
     }
     
     public void onDisable() {
@@ -128,6 +133,7 @@ public class Warpz0r extends JavaPlugin {
         setWarpCost = config.getInt("setwarpcost", 0);
         removeWarpCost = config.getInt("removewarpcost", 0);
         Warpz0r.noPrefix = config.getBoolean("noPrefix", false);
+        bedHome = config.getBoolean("bedhome", bedHome);
         saveConfig();
     }
     
@@ -139,6 +145,7 @@ public class Warpz0r extends JavaPlugin {
         config.setProperty("setwarpcost", setWarpCost);
         config.setProperty("removewarpcost", removeWarpCost);
         config.setProperty("noPrefix", Warpz0r.noPrefix);
+        config.setProperty("bedhome", bedHome);
         config.save();
     }
     
@@ -303,38 +310,64 @@ public class Warpz0r extends JavaPlugin {
             return true;
         // Command: /sethome
         } else if (comName.equals("sethome")) {
-            if (!hasPerm(player, "warpz0r.sethome", player.isOp())) {
-                sendMessage(player, "Permission Denied", true);
-                return true;
-            }
-            if (!hasPerm(player, "warpz0r.free.sethome", player.isOp())) {
-	            if (!iConomyHandler.chargePlayer(player.getName(), null, setHomeCost)) {
-	                sendMessage(player, "Insufficient funds to set home. Cost: " + iConomyHandler.format(setHomeCost), true);
+        	String pName = player.getName();
+        	if (args.length > 0) {
+        		if (!hasPerm(player, "warpz0r.admin.sethome", player.isOp())) {
+        			sendMessage(player, "Permission Denied", true);
+        			return true;
+        		}
+        		pName = args[0];
+        		sendMessage(player, "Set home of " + pName, false);
+        		log.info("[Warpz0r] " + player.getName() + " set home of " + pName);
+        	} else {
+	            if (!hasPerm(player, "warpz0r.sethome", player.isOp())) {
+	                sendMessage(player, "Permission Denied", true);
 	                return true;
 	            }
-	            if (setHomeCost > 0 && iConomyHandler.useiConomy()) {
-	                sendMessage(player, "Deducted " + iConomyHandler.format(setHomeCost) + " for setting home", false);
+	            if (!hasPerm(player, "warpz0r.free.sethome", player.isOp())) {
+		            if (!iConomyHandler.chargePlayer(player.getName(), null, setHomeCost)) {
+		                sendMessage(player, "Insufficient funds to set home. Cost: " + iConomyHandler.format(setHomeCost), true);
+		                return true;
+		            }
+		            if (setHomeCost > 0 && iConomyHandler.useiConomy()) {
+		                sendMessage(player, "Deducted " + iConomyHandler.format(setHomeCost) + " for setting home", false);
+		            }
 	            }
-            }
+	            sendMessage(player, "Home Set", false);
+	            log.info("[Warpz0r] " + player.getName() + " set home");
+        	}
             Location loc = player.getLocation();
-            Locations.addHome(loc, player.getName());
+            Locations.addHome(loc, pName);
             Locations.saveList(homeFile, Locations.homes);
-            sendMessage(player, "Home Set", false);
-            log.info("[Warpz0r] " + player.getName() + " set home");
             return true;
         // Command: /home
         } else if (comName.equals("home")) {
-            if (!hasPerm(player, "warpz0r.home", player.isOp())) {
-                sendMessage(player, "Permission Denied", true);
-                return true;
+        	String pName = player.getName();
+        	if (args.length > 0) {
+        		if (!hasPerm(player, "warpz0r.admin.home", player.isOp())) {
+        			sendMessage(player, "Permission Denied", true);
+        			return true;
+        		}
+        		pName = args[0];
+        	} else {
+	            if (!hasPerm(player, "warpz0r.home", player.isOp())) {
+	                sendMessage(player, "Permission Denied", true);
+	                return true;
+	            }
+        	}
+        	
+            Location loc = Locations.getHome(pName);
+            if (loc == null) {
+            	sendMessage(player, "Home not set", false);
+            	return true;
             }
-            Location loc = Locations.getHome(player.getName());
-            if (loc != null) {
-                if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldhome", true)) {
-                    sendMessage(player, "Not allowed to teleport home between worlds", true);
-                    return true;
-                }
-                if (!hasPerm(player, "warpz0r.free.home", player.isOp())) {
+            
+            if (args.length == 0) {
+	            if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldhome", true)) {
+	                sendMessage(player, "Not allowed to teleport home between worlds", true);
+	                return true;
+	            }
+	            if (!hasPerm(player, "warpz0r.free.home", player.isOp())) {
 	                if (!iConomyHandler.chargePlayer(player.getName(), null, homeCost)) {
 	                	sendMessage(player, "Insufficient funds to warp home. Cost: " + iConomyHandler.format(homeCost), true);
 	                	return true;
@@ -342,15 +375,16 @@ public class Warpz0r extends JavaPlugin {
 	                if (homeCost > 0 && iConomyHandler.useiConomy()) {
 	                    sendMessage(player, "Deducted " + iConomyHandler.format(homeCost) + " for teleporting home", false);
 	                }
-                }
-                // Keep the current vertical looking direction
-                loc.setPitch(player.getLocation().getPitch());
-                player.teleport(loc);
-                sendMessage(player, "Teleported to home", false);
-                log.info("[Warpz0r] " + player.getName() + " teleported to home");
+	            }
+	            sendMessage(player, "Teleported to home", false);
+	            log.info("[Warpz0r] " + player.getName() + " teleported to home");
             } else {
-                sendMessage(player, "Home not set", false);
+            	sendMessage(player, "Teleported to home of " + pName, false);
+        		log.info("[Warpz0r] " + player.getName() + " teleported to home of " + pName);
             }
+            // Keep the current vertical looking direction
+            loc.setPitch(player.getLocation().getPitch());
+            player.teleport(loc);
             return true;
         // Command: /wz
         } else if (comName.equals("wz")) {
@@ -411,20 +445,24 @@ public class Warpz0r extends JavaPlugin {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
-            if (args.length != 1) {
+            if (args.length > 1) {
             	return false;
             }
-            Player target = getPlayer(args[0]);
-            if (target == null) {
-            	sendMessage(player, "Player " + args[0] + " not found", true);
-            	return true;
+            
+            String pName = player.getName();
+            Player target = null;
+            if (args.length == 1) {
+            	pName = args[0];
+            	target = getServer().getPlayer(pName);
             }
-            Location loc = target.getWorld().getSpawnLocation();
-            Locations.addHome(loc, target.getName());
+            
+            Locations.removeHome(pName);
             Locations.saveList(homeFile, Locations.homes);
-            sendMessage(player, target.getName() + "'s Home reset to spawn", false);
-            sendMessage(target, "Home reset to spawn by " + player.getName(), false);
-            log.info("[Warpz0r] " + player.getName() + " reset " + target.getName() + "'s home");
+            sendMessage(player, "Cleared the home of " + pName, false);
+            if (target != null) {
+            	sendMessage(target, "Your home has been cleared", false);
+            }
+            log.info("[Warpz0r] " + player.getName() + " reset the home of " + pName);
             return true;
         }
 
@@ -485,6 +523,30 @@ public class Warpz0r extends JavaPlugin {
 				log.info("[Warpz0r] Permissions plugin lost.");
 				permissions = null;
 			}
+		}
+	}
+	private class pListener extends PlayerListener {
+		@Override
+		public void onPlayerBedEnter(PlayerBedEnterEvent event) {
+			if (!bedHome) return;
+			Player player = event.getPlayer();
+			Location loc = event.getBed().getLocation();
+            if (!hasPerm(player, "warpz0r.bedhome", player.isOp())) {
+                return;
+            }
+            if (!hasPerm(player, "warpz0r.free.bedhome", player.isOp())) {
+	            if (!iConomyHandler.chargePlayer(player.getName(), null, setHomeCost)) {
+	                sendMessage(player, "Insufficient funds to set home. Cost: " + iConomyHandler.format(setHomeCost), true);
+	                return;
+	            }
+	            if (setHomeCost > 0 && iConomyHandler.useiConomy()) {
+	                sendMessage(player, "Deducted " + iConomyHandler.format(setHomeCost) + " for setting home", false);
+	            }
+            }
+            sendMessage(player, "Home Set", false);
+            log.info("[Warpz0r] " + player.getName() + " set home via bed");
+        	Locations.addHome(loc, player.getName());
+        	Locations.saveList(homeFile, Locations.homes);
 		}
 	}
 }
