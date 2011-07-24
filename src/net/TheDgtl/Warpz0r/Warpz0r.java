@@ -530,7 +530,8 @@ public class Warpz0r extends JavaPlugin {
 		public void onPlayerBedEnter(PlayerBedEnterEvent event) {
 			if (!bedHome) return;
 			Player player = event.getPlayer();
-			Location loc = event.getBed().getLocation();
+			Location bed = event.getBed().getLocation();
+			Location loc = new Location(player.getWorld(), bed.getX(), bed.getY() + 1, bed.getZ());
             if (!hasPerm(player, "warpz0r.bedhome", player.isOp())) {
                 return;
             }

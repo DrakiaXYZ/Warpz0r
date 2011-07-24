@@ -28,7 +28,7 @@ iConomy 5.x support
 /home - Warp to your set home
 /home <player> - Warp to a specified players home
 /sethome - Sets your home
-/home <player> - Set a specified players home
+/sethome <player> - Set a specified players home
 /clearhome <player> - Clear a players home
 /wz compass - Set your compass to point to your home
 /wz compass <warp> - Set your compass to point to <warp>
@@ -74,6 +74,8 @@ warpz0r.admin.sethome - Allow use of /sethome <player>
 =============
   Changes
 =============
+[Version 1.3.1]
+  - When setting home via bed, set it to 1 block above bed
 [Version 1.3.0]
   - Added /home <player>
   - Added /sethome <player>
