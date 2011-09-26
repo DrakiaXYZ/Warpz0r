@@ -89,7 +89,8 @@ public class Warpz0r extends JavaPlugin {
         defWorld = getServer().getWorlds().get(0);
         
         permissions = (Permissions)checkPlugin("Permissions");
-        iConomyHandler.iconomy = (iConomy)checkPlugin("iConomy");
+        if (iConomyHandler.useiConomy)
+        	iConomyHandler.iconomy = (iConomy)checkPlugin("iConomy");
         
         // Check if a previous warps.txt exists, import if it does.
         File oldFile = new File(warpFile.substring(0, warpFile.length() - 2) + "txt");
@@ -173,7 +174,7 @@ public class Warpz0r extends JavaPlugin {
         String comName = command.getName().toLowerCase();
         // Command: /warp
         if (comName.equals("warp")) {
-            if (!hasPerm(player, "warpz0r.warp", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.warp")) {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
@@ -182,12 +183,12 @@ public class Warpz0r extends JavaPlugin {
             }
             Location loc = Locations.getWarp(args[0]);
             if (loc != null) {
-                if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldwarp", player.isOp())) {
+                if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldwarp")) {
                     sendMessage(player, "Not allowed to warp between worlds", true);
                     return true;
                 }
                 // iConomy check/charge
-                if (!hasPerm(player, "warpz0r.free.warp", player.isOp())) {
+                if (!hasPerm(player, "warpz0r.free.warp")) {
 	                int cost = Locations.getWarpCost(args[0]);
 	                if (cost < 0) cost = warpCost;
 	                if (!iConomyHandler.chargePlayer(player.getName(), null, cost)) {
@@ -198,6 +199,8 @@ public class Warpz0r extends JavaPlugin {
 	                    sendMessage(player, "Deducted " + iConomyHandler.format(cost) + " for warping", false);
 	                }
                 }
+                // Load the chunk
+                loc.getBlock().getChunk().load();
                 // Keep the current vertical looking direction
                 loc.setPitch(player.getLocation().getPitch());
                 player.teleport(loc);
@@ -210,7 +213,7 @@ public class Warpz0r extends JavaPlugin {
             return true;
         // Command: /setwarp
         } else if (comName.equals("setwarp")) {
-            if (!hasPerm(player, "warpz0r.set", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.set")) {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
@@ -219,10 +222,10 @@ public class Warpz0r extends JavaPlugin {
             }
             
             int cost = -1;
-            if (args.length == 2 && hasPerm(player, "warpz0r.set.cost", player.isOp()))
+            if (args.length == 2 && hasPerm(player, "warpz0r.set.cost"))
             	cost = Integer.valueOf(args[1]);
             
-            if (!hasPerm(player, "warpz0r.free.setwarp", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.free.setwarp")) {
 	            if (!iConomyHandler.chargePlayer(player.getName(), null, setWarpCost)) {
 	                sendMessage(player, "Insufficient funds to set warp. Cost: " + iConomyHandler.format(setWarpCost), true);
 	                return true;
@@ -239,7 +242,7 @@ public class Warpz0r extends JavaPlugin {
             return true;
         // Command: /removewarp
         } else if (comName.equals("removewarp")) {
-            if (!hasPerm(player, "warpz0r.remove", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.remove")) {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
@@ -252,7 +255,7 @@ public class Warpz0r extends JavaPlugin {
                 log.info("[Warpz0r] " + player.getName() + " tried to remove warp " + args[0]);
                 return true;
             }
-            if (!hasPerm(player, "warpz0r.free.removewarp", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.free.removewarp")) {
 	            if (!iConomyHandler.chargePlayer(player.getName(), null, removeWarpCost)) {
 	            	sendMessage(player, "Insufficient funds to remove warp. Cost: " + iConomyHandler.format(removeWarpCost), true);
 	            	return true;
@@ -268,7 +271,7 @@ public class Warpz0r extends JavaPlugin {
             return true;
         // Command: /listwarps
         } else if (comName.equals("listwarps")) {
-            if (!hasPerm(player, "warpz0r.list", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.list")) {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
@@ -286,7 +289,7 @@ public class Warpz0r extends JavaPlugin {
             return true;
         // Command: /warpto
         } else if (comName.equals("warpto")) {
-            if (!hasPerm(player, "warpz0r.warpto", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.admin.warpto")) {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
@@ -312,7 +315,7 @@ public class Warpz0r extends JavaPlugin {
         } else if (comName.equals("sethome")) {
         	String pName = player.getName();
         	if (args.length > 0) {
-        		if (!hasPerm(player, "warpz0r.admin.sethome", player.isOp())) {
+        		if (!hasPerm(player, "warpz0r.admin.sethome")) {
         			sendMessage(player, "Permission Denied", true);
         			return true;
         		}
@@ -320,11 +323,11 @@ public class Warpz0r extends JavaPlugin {
         		sendMessage(player, "Set home of " + pName, false);
         		log.info("[Warpz0r] " + player.getName() + " set home of " + pName);
         	} else {
-	            if (!hasPerm(player, "warpz0r.sethome", player.isOp())) {
+	            if (!hasPerm(player, "warpz0r.sethome")) {
 	                sendMessage(player, "Permission Denied", true);
 	                return true;
 	            }
-	            if (!hasPerm(player, "warpz0r.free.sethome", player.isOp())) {
+	            if (!hasPerm(player, "warpz0r.free.sethome")) {
 		            if (!iConomyHandler.chargePlayer(player.getName(), null, setHomeCost)) {
 		                sendMessage(player, "Insufficient funds to set home. Cost: " + iConomyHandler.format(setHomeCost), true);
 		                return true;
@@ -344,13 +347,13 @@ public class Warpz0r extends JavaPlugin {
         } else if (comName.equals("home")) {
         	String pName = player.getName();
         	if (args.length > 0) {
-        		if (!hasPerm(player, "warpz0r.admin.home", player.isOp())) {
+        		if (!hasPerm(player, "warpz0r.admin.home")) {
         			sendMessage(player, "Permission Denied", true);
         			return true;
         		}
         		pName = args[0];
         	} else {
-	            if (!hasPerm(player, "warpz0r.home", player.isOp())) {
+	            if (!hasPerm(player, "warpz0r.home")) {
 	                sendMessage(player, "Permission Denied", true);
 	                return true;
 	            }
@@ -363,11 +366,11 @@ public class Warpz0r extends JavaPlugin {
             }
             
             if (args.length == 0) {
-	            if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldhome", true)) {
+	            if (!loc.getWorld().getName().equals(player.getWorld().getName()) && !hasPerm(player, "warpz0r.worldhome")) {
 	                sendMessage(player, "Not allowed to teleport home between worlds", true);
 	                return true;
 	            }
-	            if (!hasPerm(player, "warpz0r.free.home", player.isOp())) {
+	            if (!hasPerm(player, "warpz0r.free.home")) {
 	                if (!iConomyHandler.chargePlayer(player.getName(), null, homeCost)) {
 	                	sendMessage(player, "Insufficient funds to warp home. Cost: " + iConomyHandler.format(homeCost), true);
 	                	return true;
@@ -392,7 +395,7 @@ public class Warpz0r extends JavaPlugin {
         	if (!args[0].equalsIgnoreCase("compass")) return false;
         	// Command: /wz (Set compass to home)
         	if (args.length == 1) {
-        		if (!hasPerm(player, "warpz0r.compasshome", true)) {
+        		if (!hasPerm(player, "warpz0r.compasshome")) {
         			sendMessage(player, "Permissions Denied", true);
         			return true;
         		}
@@ -411,7 +414,7 @@ public class Warpz0r extends JavaPlugin {
         	} else if (args.length == 2) {
         		// Reset compass to spawn
         		if (args[1].equalsIgnoreCase("reset")) {
-            		if (!hasPerm(player, "warpz0r.compassreset", true)) {
+            		if (!hasPerm(player, "warpz0r.compassreset")) {
             			sendMessage(player, "Permissions Denied", true);
             			return true;
             		}
@@ -419,7 +422,7 @@ public class Warpz0r extends JavaPlugin {
         			player.setCompassTarget(loc);
         			sendMessage(player, "Compass now pointed to spawn", false);
         		} else {
-            		if (!hasPerm(player, "warpz0r.compasswarp", player.isOp())) {
+            		if (!hasPerm(player, "warpz0r.compasswarp")) {
             			sendMessage(player, "Permissions Denied", true);
             			return true;
             		}
@@ -441,7 +444,7 @@ public class Warpz0r extends JavaPlugin {
         	return true;
         // Command: /clearhome
         } else if (comName.equalsIgnoreCase("clearhome")) {
-            if (!hasPerm(player, "warpz0r.admin.clearhome", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.admin.clearhome")) {
                 sendMessage(player, "Permission Denied", true);
                 return true;
             }
@@ -490,11 +493,11 @@ public class Warpz0r extends JavaPlugin {
 	/*
 	 * Check whether the player has the given permissions.
 	 */
-	public boolean hasPerm(Player player, String perm, boolean def) {
+	public boolean hasPerm(Player player, String perm) {
 		if (permissions != null) {
 			return permissions.getHandler().has(player, perm);
 		} else {
-			return def;
+			return player.hasPermission(perm);
 		}
 	}
 	
@@ -531,15 +534,15 @@ public class Warpz0r extends JavaPlugin {
 			if (!bedHome) return;
 			Player player = event.getPlayer();
 			Location loc = player.getLocation();
-            if (!hasPerm(player, "warpz0r.bedhome", player.isOp())) {
+            if (!hasPerm(player, "warpz0r.bedhome")) {
                 return;
             }
-            if (!hasPerm(player, "warpz0r.free.bedhome", player.isOp())) {
+            if (iConomyHandler.useiConomy() && !hasPerm(player, "warpz0r.free.bedhome")) {
 	            if (!iConomyHandler.chargePlayer(player.getName(), null, setHomeCost)) {
 	                sendMessage(player, "Insufficient funds to set home. Cost: " + iConomyHandler.format(setHomeCost), true);
 	                return;
 	            }
-	            if (setHomeCost > 0 && iConomyHandler.useiConomy()) {
+	            if (setHomeCost > 0) {
 	                sendMessage(player, "Deducted " + iConomyHandler.format(setHomeCost) + " for setting home", false);
 	            }
             }

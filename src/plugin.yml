@@ -1,7 +1,7 @@
 name: Warpz0r
 main: net.TheDgtl.Warpz0r.Warpz0r
 author: Drakia
-version: 1.3.1
+version: 1.4.0
 commands:
   warp:
     description: Warp yourself to specified warp point
@@ -35,3 +35,92 @@ commands:
   clearhome:
     description: Clear a players home
     usage: /<command> <player> - Set the specified players home to spawn 
+permissions:
+  warpz0r.use:
+    description: Allow full use of Warpz0r
+    default: op
+    children:
+      warpz0r.use.warp:
+        description: Allow use of warping functionality
+        children:
+          warpz0r.warp:
+            description: Allow use of /warp <warp>
+            default: op
+          warpz0r.set:
+            description: Allow use of /setwarp <warp>
+            default: op
+          warpz0r.setcost:
+            description: Allow use of /setwarp <warp> <cost>
+            default: op
+          warpz0r.remove:
+            description: Allow use of /removewarp <warp>
+            default: op
+          warpz0r.list:
+            description: Allow use of /listwarps
+            default: op
+          warpz0r.worldwarp:
+            description: Allow warping between worlds
+            default: op
+      warpz0r.use.home:
+        description: Allow use of home commands
+        children:
+          warpz0r.sethome:
+            description: Allow use of /sethome
+            default: true
+          warpz0r.home:
+            description: Allow use of /home
+            default: true
+          warpz0r.worldhome:
+            description: Allow teleporting between worlds during /home 
+            default: true
+          warpz0r.bedhome:
+            description: Allow use of a bed setting players home
+            default: true
+      warpz0r.use.compass:
+        description: Allow use of compass commands
+        children:
+          warpz0r.compasshome:
+            description: Allow use of /wz compass
+            default: true
+          warpz0r.compassreset:
+            description: Allow use of /wz compass reset
+            default: true
+          warpz0r.compasswarp:
+            description: Allow use of /wz compass <warp>
+            default: op
+  warpz0r.admin:
+    description: Allow use of admin commands
+    children:
+      warpz0r.admin.warpto:
+        description: Allow use of /warpto <player> <warp>
+        default: op
+      warpz0r.admin.sethome:
+        description: Allow use of /sethome <player>
+        default: op
+      warpz0r.admin.home:
+        description: Allow use of /home <player>
+        default: op
+      warpz0r.admin.clearhome:
+        description: Allow use of /clearhome [player]
+        default: op
+  warpz0r.free:
+    description: All warpz0r commands are free
+    children:
+      warpz0r.free.warp:
+        description: Don't charge for /warp
+        default: op
+      warpz0r.free.setwarp:
+        description: Don't charge for /setwarp
+        default: op
+      warpz0r.free.removewarp:
+        description: Don't charge for /removewarp
+        default: op
+      warpz0r.free.sethome:
+        description: Don't charge for /sethome
+        default: op
+      warpz0r.free.home:
+        description: Don't charge for /home
+        default: op
+      warpz0r.free.bedhome:
+        description: Don't charge on bed usage setting home
+        default: op
