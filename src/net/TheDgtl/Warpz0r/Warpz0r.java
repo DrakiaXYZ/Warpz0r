@@ -43,7 +43,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.config.Configuration;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
-import com.iConomy.*;
 
 public class Warpz0r extends JavaPlugin {
     
@@ -88,10 +87,17 @@ public class Warpz0r extends JavaPlugin {
         }
         defWorld = getServer().getWorlds().get(0);
         
+        // Enable Permissions, disable if it's a bridge
         permissions = (Permissions)checkPlugin("Permissions");
-        if (iConomyHandler.useiConomy)
-        	iConomyHandler.iconomy = (iConomy)checkPlugin("iConomy");
+        if (permissions != null) {
+        	if (permissions.getDescription().getVersion().equals("2.7.7"))
+        		permissions = null;
+        }
         
+        if (iConomyHandler.setupiConomy(pm)) {
+        	log.info("[Warpz0r] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
+        }
+
         // Check if a previous warps.txt exists, import if it does.
         File oldFile = new File(warpFile.substring(0, warpFile.length() - 2) + "txt");
         File newFile = new File(warpFile);
@@ -504,23 +510,24 @@ public class Warpz0r extends JavaPlugin {
 	private class sListener extends ServerListener {
 		@Override
 		public void onPluginEnable(PluginEnableEvent event) {
-			if (iConomyHandler.iconomy == null) {
-				if (event.getPlugin().getDescription().getName().equalsIgnoreCase("iConomy")) {
-					iConomyHandler.iconomy = (iConomy)checkPlugin(event.getPlugin());
-				}
+			if (iConomyHandler.setupiConomy(event.getPlugin())) {
+				log.info("[Warpz0r] Register v" + iConomyHandler.register.getDescription().getVersion() + " found");
 			}
 			if (permissions == null) {
 				if (event.getPlugin().getDescription().getName().equalsIgnoreCase("Permissions")) {
 					permissions = (Permissions)checkPlugin(event.getPlugin());
+			        if (permissions != null) {
+			        	if (permissions.getDescription().getVersion().equals("2.7.7"))
+			        		permissions = null;
+			        }
 				}
 			}
 		}
 		
 		@Override
 		public void onPluginDisable(PluginDisableEvent event) {
-			if (event.getPlugin() == iConomyHandler.iconomy) {
-				log.info("[Warpz0r] Stargate plugin lost.");
-				iConomyHandler.iconomy = null;
+			if (iConomyHandler.checkLost(event.getPlugin())) {
+				log.info("[Warpz0r] Register plugin lost.");
 			}
 			if (event.getPlugin() == permissions) {
 				log.info("[Warpz0r] Permissions plugin lost.");

@@ -78,10 +78,18 @@ warpz0r.free: All warpz0r commands are free
     warpz0r.free.sethome: Don't charge for /sethome (default: op)
     warpz0r.free.home: Don't charge for /home (default: op)
     warpz0r.free.bedhome: Don't charge on bed usage setting home (default: op)
+    
+** Note on Permissions 2.x/3.x: If you are using Perms 2/3, you MUST specify the child nodes individually,
+   as Perms 2/3 are not SuperPerms compatible, they do not support the permissions hierarchy defined in plugin.yml
 
 =============
   Changes
 =============
+[Version 1.4.2]
+  - Prefer SuperPerms over PermsBridge
+  - Register support instead of iConomy
+[Version 1.4.1]
+  - Stupid iConomy.
 [Version 1.4.0]
   - Implemented SuperPerms. This includes a perms overhaul, please re-do your permissions.
   - Fixed teleporting to unloaded chunks
