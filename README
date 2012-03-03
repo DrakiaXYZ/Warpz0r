@@ -16,10 +16,9 @@ Source: https://github.com/TheDgtl/Warpz0r
  Features
 =============
 This plugin supports warping/homing between multiple worlds.
-Permissions plugin is used if installed, otherwise goes based on isOp().
-Will import your existing homes and warps if you place homes.txt/warps.txt file into the plugins/Warpz0r/ folder
+SuperPerms support only, supports all SuperPerms handlers (bPermissions, PEX, PermissionsBukkit, etc)
 Ability to disable inter-world warp
-iConomy 5.x support
+Vault support for Economy integration
 
 =============
   Commands
@@ -38,12 +37,15 @@ iConomy 5.x support
 /wz compass - Set your compass to point to your home
 /wz compass <warp> - Set your compass to point to <warp>
 /wz compass reset - Set your compass to point to spawn
+/wz reload - Reload the Warpz0r config
 
 =============
 Configuration
 =============
-useiconomy - Set to "true" to use iConomy
+useiconomy - Set to "true" to use any support Economy plugin
 sethomecost - The cost to use /sethome
+setwarpcost - The cost to use /setwarp
+removewarpcost - The cost to use /removewarp
 warpcost - The cost to use /warp
 homecost - The cost to use /home
 noPrefix - Set to "true" to disable "[Warpz0r]" before player messages
@@ -83,13 +85,15 @@ warpz0r.free: All warpz0r commands are free
     warpz0r.free.sethome: Don't charge for /sethome (default: op)
     warpz0r.free.home: Don't charge for /home (default: op)
     warpz0r.free.bedhome: Don't charge on bed usage setting home (default: op)
-    
-** Note on Permissions 2.x/3.x: If you are using Perms 2/3, you MUST specify the child nodes individually,
-   as Perms 2/3 are not SuperPerms compatible, they do not support the permissions hierarchy defined in plugin.yml
 
 =============
   Changes
 =============
+[Version 1.5.0]
+  - Update for Bukkit 1.1-R5 and later (Including 1.2 builds)
+  - Removed Register, added Vault
+  - Added /wz reload command
+  - Cost is now doubles, allows non-whole numbers (5.25 for example)
 [Version 1.4.2]
   - Prefer SuperPerms over PermsBridge
   - Register support instead of iConomy

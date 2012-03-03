@@ -1,0 +1,8 @@
+useiconomy: false
+warpcost: 5
+homecost: 5
+sethomecost: 0
+setwarpcost: 0
+removewarpcost: 0
+noPrefix: false
+bedhome: false
